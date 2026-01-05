@@ -40,7 +40,7 @@ export const useActivities = (id?: string) => {
   })
 
   const createActivity = useMutation({
-    mutationFn: async (activity: Activity) => {
+    mutationFn: async (activity: CreateActivityDto) => {
       const response = await agent.post('/activities', activity)
       return response.data  //get id after creating new activity
     },

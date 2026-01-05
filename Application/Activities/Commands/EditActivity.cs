@@ -1,8 +1,6 @@
-using System;
 using Application.Activities.DTO;
 using Application.Core;
 using AutoMapper;
-using Domain;
 using MediatR;
 using Persistence;
 
