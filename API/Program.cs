@@ -2,7 +2,9 @@ using API.Middleware;
 using Application.Activities.Queries;
 using Application.Activities.Validators;
 using Application.Core;
+using Domain;
 using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -25,6 +27,12 @@ builder.Services.AddMediatR(x =>
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 builder.Services.AddValidatorsFromAssemblyContaining<CreateActivityValidator>();
 builder.Services.AddTransient<ExceptionMiddleware>();
+builder.Services.AddIdentityApiEndpoints<User>(opt =>
+{
+  opt.User.RequireUniqueEmail = true;
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<AppDbContext>();
 
 var app = builder.Build();
 
@@ -33,7 +41,11 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
     .WithOrigins("http://localhost:3000", "https://localhost:3000"));
 
+app.UseAuthentication(); // Must come before UseAuthorization
+app.UseAuthorization();
+
 app.MapControllers();
+app.MapGroup("api").MapIdentityApi<User>(); // api/login, api/register, etc.
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
@@ -41,8 +53,10 @@ var services = scope.ServiceProvider;
 try
 {
   var context = services.GetRequiredService<AppDbContext>();
+  var userManager = services.GetRequiredService<UserManager<User>>();
+
   await context.Database.MigrateAsync();
-  await DbInitializer.SeedData(context);
+  await DbInitializer.SeedData(context, userManager);
 }
 catch (Exception ex)
 {
