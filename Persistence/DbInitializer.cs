@@ -12,9 +12,9 @@ public class DbInitializer
     {
       var users = new List<User>
       {
-        new() { UserName = "alice", Email = "alice@test.com", DisplayName = "Alice Smith" },
-        new() { UserName = "bob", Email = "bob@test.com", DisplayName = "Bob Johnson" },
-        new() { UserName = "charlie", Email = "charlie@test.com", DisplayName = "Charlie Brown" }
+        new() { UserName = "alice@test.com", Email = "alice@test.com", DisplayName = "Alice Smith" },
+        new() { UserName = "bob@test.com", Email = "bob@test.com", DisplayName = "Bob Johnson" },
+        new() { UserName = "charlie@test.com", Email = "charlie@test.com", DisplayName = "Charlie Brown" }
       };
 
       foreach (var user in users)
